@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
 
 import { Card } from "./components/card";
+import { FinalMsg } from "./pages/finalMsg";
 
 import { randomInt } from "./utils/randomInt";
+import { shuffleArray } from "./utils/shuffleArr";
+import { checkGame } from "./utils/gameLogic";
 
 import "./App.css";
 
 function App() {
+  const [count, setCount] = useState(9);
+
+  const [gameStatus, setGameStatus] = useState(true);
   const [pokemons, setPokemons] = useState([]);
 
   useEffect(() => {
@@ -25,31 +31,56 @@ function App() {
           id: data.id,
           name: data.name,
           img: data.sprites.other.dream_world.front_default,
+          clicked: false,
         };
       });
 
       setPokemons(await Promise.all(newPokemons));
-      console.log();
     };
 
-    getPokemons();
-  }, []);
-
-  console.log(pokemons);
+    gameStatus && getPokemons();
+  }, [gameStatus]);
 
   return (
     <>
-      <h1>Card game!</h1>
-      <div id="card-wrapper">
-        {pokemons.map((pokemon) => (
-          <Card key={pokemon.id} src={pokemon.img} />
-        ))}
-      </div>
+      <h1>{`${count}/8`}</h1>
+
+      {count < 8 ? (
+        gameStatus ? (
+          <div id="card-wrapper">
+            {pokemons.map((pokemon) => (
+              <Card
+                key={pokemon.id}
+                src={pokemon.img}
+                action={() => {
+                  setPokemons(shuffleArray(pokemons));
+                  setGameStatus(checkGame(pokemon));
+                  pokemon.clicked ? null : setCount(count + 1);
+                  pokemon.clicked = true;
+                }}
+              />
+            ))}
+          </div>
+        ) : (
+          <FinalMsg
+            msg={"YOU LOST!"}
+            action={() => {
+              setGameStatus(true);
+              setCount(0);
+            }}
+          />
+        )
+      ) : (
+        <FinalMsg
+          msg={"YOU WON!"}
+          action={() => {
+            setGameStatus(true);
+            setCount(0);
+          }}
+        />
+      )}
     </>
   );
 }
 
 export default App;
-
-// data.sprites.other.dream_world.front_default
-// "https://pokeapi.co/api/v2/pokemon?limit=8&offset=0"
