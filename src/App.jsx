@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 
+// COMPONENTS
+
 import { Card } from "./components/card";
 import { FinalMsg } from "./pages/finalMsg";
+
+// FUNCTIONS
 
 import { randomInt } from "./utils/randomInt";
 import { shuffleArray } from "./utils/shuffleArr";
@@ -10,7 +14,7 @@ import { checkGame } from "./utils/gameLogic";
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(9);
+  const [count, setCount] = useState(0);
 
   const [gameStatus, setGameStatus] = useState(true);
   const [pokemons, setPokemons] = useState([]);
